@@ -1,5 +1,7 @@
 const express = require('express');
-const hbs = require('hbs')
+const hbs = require('hbs');
+const fs  = require('fs');
+const port = process.env.PORT || 3000;
 
 var app = express();
 
@@ -9,6 +11,15 @@ app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next)=> {
+    var now = new Date().toString();
+    var log = `${now}: ${req.method} ${req.url}`;
+
+    console.log(log);
+    fs.appendFile('server.log', log + '\n', (err) => {
+        if(err){
+            console.log('Failed to log');
+        }
+    });
     next();
 });
 
@@ -35,4 +46,4 @@ app.get('/bad', (req, res)=> {
        errorMessage: 'Page not found !!'
    });
 });
-app.listen(3000);
+app.listen(port);
